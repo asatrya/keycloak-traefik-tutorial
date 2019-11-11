@@ -1,5 +1,7 @@
 # Docker Keycloak IdP and Traefik Workshop
 
+This repo is made based on https://github.com/ibuetler/docker-keycloak-traefik-workshop
+
 For the sake of this tutorial I have chosen the whoami Docker image we want to add authentication using Keycloak. The whoami application is a tiny Go webserver that prints os information and HTTP request to output. The whoami sample application is not asking for a username and password. You can grab the whoami docker from https://hub.docker.com/r/containous/whoami . The whoami web port is listening on port `80`.
 
 ## Test Running Application
