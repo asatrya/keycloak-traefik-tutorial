@@ -3,7 +3,7 @@ services:
 
   traefik:
     image: traefik:v1.7.4-alpine
-    hostname: traefik.idocker.hacking-lab.com
+    hostname: traefik.lab.com
     environment:
       TZ: Asia/Jakarta
     ports:
@@ -24,8 +24,8 @@ services:
       --docker.swarmmode=false
       --docker.endpoint='unix:///var/run/docker.sock'
     networks:
-      transit_idp:
-      transit_ttyd:
+      auth_net:
+      service_net:
     labels:
       traefik.enable: true
   
@@ -34,17 +34,17 @@ services:
     environment:
         - POSTGRES_DB=keycloak
         - POSTGRES_USER=keycloak
-        - POSTGRES_PASSWORD=changeme-postgres
-        - POSTGRES_ROOT_PASSWORD=changeme-rootpw
+        - POSTGRES_PASSWORD=password
+        - POSTGRES_ROOT_PASSWORD=password
     networks:
-      transit_idp:
+      auth_net:
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - keycloak_db_data_vol:/var/lib/postgresql/data
     labels:
       - "traefik.enable=false"
 
   keycloak:
-    image: jboss/keycloak:latest
+    image: jboss/keycloak:7.0.1
     hostname: keycloak
     environment:
       - DB_VENDOR=POSTGRES
@@ -53,49 +53,53 @@ services:
       - DB_PORT=5432
       - DB_USER=keycloak
       - DB_SCHEMA=public
-      - DB_PASSWORD=changeme-postgres
+      - DB_PASSWORD=password
       - PROXY_ADDRESS_FORWARDING=true
       - KEYCLOAK_LOGLEVEL=INFO
       - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=changeme-keycloak
+      - KEYCLOAK_PASSWORD=password
     networks:
-      transit_idp:
+      auth_net:
     depends_on: 
       - traefik
       - keycloak_db
     labels:
       - traefik.port=8443
-      - traefik.frontend.rule=Host:auth.idocker.hacking-lab.com
+      - traefik.frontend.rule=Host:auth.lab.com
       - traefik.protocol=https
     command: ["-b", "0.0.0.0", "-Dkeycloak.profile.feature.docker=enabled"]
   
   keycloak-gatekeeper:
-    image: hackinglab/keycloak-gatekeeper:latest
+    image: keycloak/keycloak-gatekeeper:7.0.0
     labels:
      - "traefik.port=3000"
-     - "traefik.frontend.rule=Host:ttyd.idocker.hacking-lab.com"
+     - "traefik.frontend.rule=Host:service1.lab.com"
      - "traefik.protocol=http"
+    restart: always
     depends_on: 
      - keycloak
     networks:
-      transit_ttyd:
+      service_net:
     external_links:
-      - traefik:auth.idocker.hacking-lab.com
+      - traefik:auth.lab.com
     volumes:
       - ./keycloak-gatekeeper/keycloak-gatekeeper.conf:/etc/keycloak-gatekeeper.conf
     entrypoint:
       - /opt/keycloak-gatekeeper
       - --config=/etc/keycloak-gatekeeper.conf
   
-  ttyd:
+  service_1:
     image: containous/whoami
     networks:
-      transit_ttyd:
+      service_net:
     depends_on: 
       - traefik
     labels:
       - "traefik.enable=false"
 
 networks:
-  transit_ttyd:
-  transit_idp:
+  service_net:
+  auth_net:
+
+volumes: 
+  keycloak_db_data_vol:
