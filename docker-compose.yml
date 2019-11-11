@@ -38,6 +38,8 @@ services:
         - POSTGRES_ROOT_PASSWORD=password
     networks:
       auth_net:
+    ports:
+      - "5432:5432"
     volumes:
       - keycloak_db_data_vol:/var/lib/postgresql/data
     labels:

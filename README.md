@@ -219,6 +219,18 @@ curl -X GET \
   -H 'cache-control: no-cache'
 ```
 
+## Debugging Notes
+
+### Accees to Keycloak Dabatabse
+
+Use this credentials to access
+
+* Host: `auth.lab.com`
+* Port: 5432
+* Database: `keycloak`
+* User: `keycloak`
+* Password: `password`
+
 ## THE END
 
 After this tutorial you should have an application (whoami) that comes without authentication and authorization secured using traefik, keycloak and keycloak-gateeeper. The steps taken in this tutorial hopefully have guided you to the end - to a working setup.
