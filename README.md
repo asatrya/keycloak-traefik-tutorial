@@ -2,6 +2,8 @@
 
 For the sake of this tutorial I have chosen the whoami Docker image we want to add authentication using Keycloak. The whoami application is a tiny Go webserver that prints os information and HTTP request to output. The whoami sample application is not asking for a username and password. You can grab the whoami docker from https://hub.docker.com/r/containous/whoami . The whoami web port is listening on port `80`.
 
+## Test Running Application
+
 ```sh
 docker pull containous/whoami
 docker run --rm -i -p 80:80 containous/whoami
@@ -76,7 +78,10 @@ Follow steps below:
 1. Click on "Clients" in the left menu
 1. Click on "Create", then configure these values:
    * Client ID = `demo-client`
+1. Click "Save"
+1. Edit this field:
    * Access Type = `confidential`
+   * Valid Redirect URIs = `https://service1.lab.com/*`
 1. After saving, please click the "Credentials" menu item where you will find the secret we need for keycloak-gatekeeper. Copy the Secret as you need it later when configuring `keycloak-gatekeeper`
 
 ### Create Client Audience and Scope
@@ -88,6 +93,7 @@ Follow steps below:
 1. Click on "Client Scopes" in the left menu and press "Create"
 1. Use this data:
    * Name = `demo-scopes`
+1. Click "save"
 1. Click on "Mappers" tab and click "Create" button. Please configure the mapper the same as in the list below.
    * Name = `demo-client-mapper`
    * Mapper Type = `Audience`
@@ -151,15 +157,25 @@ Please specify:
 
 If you don't remember, the client secret comes from the client configuration tab. Copy your value from there.
 
-## Step 5: Testing whoami via traefik
+## Step 5: Refresh `keycloak-gatekeeper` Service
 
-Now you should have the /etc/hosts entries, in one linux terminal you should have your traefik docker service up and running and in another linux terminal you should have the whoami docker service up and running.
+The `keycloak-gatekeeper` needs to read new configuration file. So, we have to restart the service using this command
 
-Can you answer all these `pre-requirements` with YES?
+```sh
+docker-compose restart keycloak-gatekeeper
+```
+
+## Step 6: Testing whoami via traefik
 
 Ok, then let's see how it works using the browser.
 
 Please open Firefox and point your browser to https://service1.lab.com
+
+Follow registration step and then login using the new username and password.
+
+You can see the `whoami` service is running and also displaying the token information.
+
+![whoami_authenticated](images/whoami_authenticated.png)
 
 ## THE END
 
