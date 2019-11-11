@@ -179,6 +179,46 @@ You can see the `whoami` service is running and also displaying the token inform
 
 ![whoami_authenticated](images/whoami_authenticated.png)
 
+## Step 7: Authenticate Using API Endpoint
+
+Use Postman and make this request
+
+```curl
+curl -X POST \
+  https://auth.lab.com/auth/realms/demo-realm/protocol/openid-connect/token \
+  -H 'Accept: */*' \
+  -H 'Accept-Encoding: gzip, deflate' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -H 'Content-Length: 127' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -H 'Host: auth.lab.com' \
+  -H 'Postman-Token: 24099870-cba6-41a8-8d85-dde5408faa2b,963f8ac0-23e1-430d-b69a-aadf452959bb' \
+  -H 'User-Agent: PostmanRuntime/7.19.0' \
+  -H 'cache-control: no-cache' \
+  -d 'client_id=demo-client&grant_type=password&username=asatrya&password=password&client_secret=2a3d0e8d-d605-49ce-b65d-c244399d15e3'
+```
+
+You will get `access_token` as the response. Copy this token as you will need in next steps.
+
+## Step 8: Access Service Using Endpoint API
+
+Use Postman to make this request:
+
+```curl
+curl -X GET \
+  https://service1.lab.com \
+  -H 'Accept: */*' \
+  -H 'Accept-Encoding: gzip, deflate' \
+  -H 'Authorization: Bearer YOUR-ACCESS-TOKEN' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Connection: keep-alive' \
+  -H 'Host: service1.lab.com' \
+  -H 'Postman-Token: e77b0a50-42df-4503-9d34-34262f1bc61d,6547e1d8-4af4-455f-a72d-dcbe3ae6c5b7' \
+  -H 'User-Agent: PostmanRuntime/7.19.0' \
+  -H 'cache-control: no-cache'
+```
+
 ## THE END
 
 After this tutorial you should have an application (whoami) that comes without authentication and authorization secured using traefik, keycloak and keycloak-gateeeper. The steps taken in this tutorial hopefully have guided you to the end - to a working setup.
