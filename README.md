@@ -1,4 +1,4 @@
-# Docker Keycloak IdP and Traefik Workshop
+# Keycloak and Traefik Tutorial
 
 This repo is made based on https://github.com/ibuetler/docker-keycloak-traefik-workshop
 
